@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Memon Jamat Korba — Lifetime Members</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#085041">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Memon Jamat Korba">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green-dark:#085041;--green:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+  --gold:#EF9F27;--gold-light:#FAEEDA;--gold-dark:#854F0B;
+  --bg:#F7F6F2;--card:#fff;--text:#1C1C1A;--muted:#6B6B67;--hint:#9B9B97;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.05);
+  --r:12px;--r2:8px;--font:'DM Sans',sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+/* ── HEADER ── */
+.app-header{background:var(--green-dark);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.15)}
+.header-inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.header-logo{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.header-title h1{font-size:17px;font-weight:600;color:#fff;line-height:1.2}
+.header-title p{font-size:12px;color:rgba(255,255,255,0.65);margin-top:1px}
+.header-status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap}
+.header-status .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.header-status.live .dot{background:#5FE0A8}
+.refresh-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;transition:background .15s;padding:0}
+.refresh-btn:hover{background:rgba(255,255,255,0.22)}
+.refresh-btn.spinning{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:22px 20px}
+
+/* ── SEARCH ── */
+.search-bar{display:flex;gap:10px;margin-bottom:18px}
+.search-wrap{flex:1;position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--hint);pointer-events:none}
+#searchInput{width:100%;height:42px;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r2);padding:0 38px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;transition:border-color .2s}
+#searchInput:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(15,110,86,0.1)}
+.clear-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--hint);cursor:pointer;font-size:17px;display:none;padding:2px;line-height:1}
+.clear-btn:hover{color:var(--text)}
+
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.results-meta span{font-size:13px;color:var(--muted)}
+.sort-select{font-size:13px;padding:5px 10px;border-radius:var(--r2);border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-family:var(--font)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.member-card{background:#fff;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);transition:box-shadow .2s,transform .15s;animation:fadeIn .22s ease both}
+.member-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);transform:translateY(-1px)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card-top{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--border)}
+.avatar{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex-shrink:0;margin-top:4px}
+.card-name-wrap{flex:1;min-width:0;overflow:visible}
+.card-name-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:nowrap}
+.card-name{font-size:14px;font-weight:600;color:var(--text);font-family:'Noto Sans Devanagari',var(--font);line-height:1.7;white-space:normal;word-break:break-word;overflow:visible}
+.card-clan{font-size:14px;font-weight:500;color:var(--muted);margin-top:2px;line-height:1.5}
+.receipt-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--gold-light);color:var(--gold-dark);flex-shrink:0;white-space:nowrap;vertical-align:middle}
+.card-details{padding:10px 16px;display:grid;gap:7px}
+.detail-row{display:flex;align-items:flex-start;gap:9px;font-size:13px}
+.detail-icon{width:26px;height:26px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.detail-content{flex:1;min-width:0}
+.detail-label{font-size:10px;color:var(--hint);text-transform:uppercase;letter-spacing:.5px}
+.detail-value{color:var(--text);font-size:13px;word-break:break-word;line-height:1.7;font-family:'Noto Sans Devanagari',var(--font)}
+.detail-value a{color:var(--green);text-decoration:none}
+.detail-value a:hover{text-decoration:underline}
+mark{background:#FAC775;color:#412402;border-radius:2px;padding:0 1px}
+
+.empty{grid-column:1/-1;text-align:center;padding:60px 24px}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty h3{font-size:17px;font-weight:600;margin-bottom:6px}
+.empty p{font-size:14px;color:var(--muted)}
+
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:26px;flex-wrap:wrap}
+.page-btn{height:34px;min-width:34px;padding:0 10px;border-radius:var(--r2);border:1px solid var(--border);background:#fff;color:var(--text);font-size:13px;cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s}
+.page-btn:hover:not(:disabled):not(.active){background:var(--green-light);border-color:var(--green)}
+.page-btn.active{background:var(--green);color:#fff;border-color:var(--green);font-weight:600}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+.page-dots{font-size:13px;color:var(--hint);padding:0 4px}
+
+/* ── LOADING / ERROR STATES ── */
+.state-box{text-align:center;padding:60px 20px}
+.state-box .icon{font-size:48px;margin-bottom:16px}
+.state-box h2{font-size:18px;font-weight:600;margin-bottom:8px}
+.state-box p{font-size:14px;color:var(--muted);line-height:1.6;max-width:420px;margin:0 auto}
+.spinner{display:inline-block;width:36px;height:36px;border:3px solid var(--green-light);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+.retry-btn{margin-top:18px;height:40px;padding:0 22px;border-radius:var(--r2);border:none;background:var(--green);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.retry-btn:hover{background:var(--green-dark)}
+
+@media(max-width:600px){
+  .main{padding:16px}
+  .grid{grid-template-columns:1fr}
+  .header-status{display:none}
+  .refresh-btn{margin-left:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-logo">🕌</div>
+    <div class="header-title">
+      <h1>Memon Jamat Korba</h1>
+      <p>Lifetime Members</p>
+    </div>
+    <div class="header-status" id="headerStatus">
+      <span class="dot"></span>
+      <span id="statusText">Loading…</span>
+    </div>
+    <button class="refresh-btn" id="refreshBtn" onclick="hardReload()" title="Hard Reload">⟳</button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Loading state -->
+  <div class="state-box" id="loadingState">
+    <div class="spinner"></div>
+    <h2>Loading members…</h2>
+    <p>Fetching the latest list from Google Sheets</p>
+  </div>
+
+  <!-- Error state -->
+  <div class="state-box" id="errorState" style="display:none">
+    <div class="icon">⚠️</div>
+    <h2>Could not load data</h2>
+    <p id="errorText">Please check your internet connection and that the Google Sheet is published correctly.</p>
+    <button class="retry-btn" onclick="loadData()">Try Again</button>
+  </div>
+
+  <!-- Search UI -->
+  <div id="searchUI" style="display:none">
+    <div class="search-bar">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="searchInput" placeholder="Search name (English/Hindi), mobile, receipt, clan…">
+        <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+      </div>
+    </div>
+
+    <div class="results-meta">
+      <span id="resultsInfo"></span>
+      <select class="sort-select" id="sortSelect" onchange="sortAndRender()">
+        <option value="default">Sort: Default</option>
+        <option value="name">Sort: Name A–Z</option>
+        <option value="clan">Sort: Clan</option>
+        <option value="receipt">Sort: Receipt No.</option>
+      </select>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+</main>
+
+<script>
+/* ════════════════════════════════════════
+   CONFIG — Google Sheet CSV URL
+════════════════════════════════════════ */
+const SHEET_ID = "1cAszKWq7VMwg3fEfU7p15kASxx9B9RZ86JrP7GlJuxk";
+// Google Visualization API endpoint - returns sheet data as JSON, no API key needed
+const SHEET_GVIZ_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:json";
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let allData = [];
+let filtered = [];
+let currentPage = 1;
+const PER_PAGE = 12;
+
+/* ════════════════════════════════════════
+   TRANSLITERATION ENGINE
+════════════════════════════════════════ */
+function transliterate(text) {
+  if (!text) return '';
+  const cMap = {
+    'क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'ng','च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'n',
+    'ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n',
+    'प':'p','फ':'f','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'w',
+    'श':'sh','ष':'sh','स':'s','ह':'h',
+    'क़':'q','ज़':'z','ड़':'r','फ़':'f','ग़':'g','ख़':'kh',
+  };
+  const vMap = {'अ':'a','आ':'a','इ':'i','ई':'i','उ':'u','ऊ':'u','ए':'e','ऐ':'ai','ओ':'o','औ':'au','ऋ':'ri'};
+  const mMap = {'ा':'a','ि':'i','ी':'i','ु':'u','ू':'u','े':'e','ै':'ai','ो':'o','ौ':'au','ृ':'ri','ं':'n','ः':'','ँ':'n','्':'','़':''};
+  const chars = [...text.toString()];
+  let r = '';
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i], nx = chars[i+1] || '';
+    if (cMap[ch] !== undefined) {
+      // handle nukta: ज + ़ → ज़
+      const withNukta = ch + '़';
+      if (nx === '़' && cMap[withNukta] !== undefined) {
+        r += cMap[withNukta];
+        const nx2 = chars[i+2] || '';
+        if (!mMap.hasOwnProperty(nx2) && nx2 !== '' && nx2 !== ' ') r += 'a';
+        i++;
+      } else {
+        r += cMap[ch];
+        if (!mMap.hasOwnProperty(nx) && nx !== '' && nx !== ' ' && nx !== '़') r += 'a';
+      }
+    } else if (mMap[ch] !== undefined) { r += mMap[ch];
+    } else if (vMap[ch] !== undefined) { r += vMap[ch];
+    } else if (ch === ' ') r += ' ';
+  }
+  return r.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function phoneticNorm(s) {
+  return (s || '').toLowerCase()
+    .replace(/w/g,'v').replace(/([aeiou])v([aeiou])/g,'$1$2')
+    .replace(/oo/g,'u').replace(/uu/g,'u')
+    .replace(/ee/g,'i').replace(/ii/g,'i').replace(/ei/g,'i')
+    .replace(/aa/g,'a').replace(/ou/g,'u').replace(/aw/g,'a').replace(/ao/g,'a')
+    .replace(/ph/g,'f').replace(/bh/g,'b').replace(/dh/g,'d').replace(/th/g,'t')
+    .replace(/kh/g,'k').replace(/gh/g,'g').replace(/sh/g,'s').replace(/ch/g,'c')
+    .replace(/q/g,'k')
+    .replace(/z/g,'j')
+    .replace(/([bcdfgjklmnprstj])v/g,'$1')
+    .replace(/(.)+/g,'$1')
+    .replace(/([bcdfgjklmnprstv])e([bcdfgjklmnprstv])/g,'$1a$2')
+    .replace(/([mnrlbdgkpstf])(an|on|in|en)(?=\s|$)/g,'$1n')
+    .replace(/[^a-z0-9 ]/g,'').trim();
+}
+
+function schwaVariants(w) {
+  const isC = c => /[bcdfghjklmnpqrstvwxyz]/.test(c);
+  const pos = [];
+  for (let i = 0; i < w.length - 2; i++) {
+    if (isC(w[i]) && w[i+1]==='a' && isC(w[i+2])) pos.push(i+1);
+  }
+  const variants = new Set([w]);
+  for (let mask = 1; mask < (1 << pos.length); mask++) {
+    let chars = w.split(''), offset = 0;
+    for (let bit = 0; bit < pos.length; bit++) {
+      if (mask & (1 << bit)) { chars.splice(pos[bit]-offset,1); offset++; }
+    }
+    variants.add(chars.join(''));
+  }
+  return [...variants];
+}
+
+function consonantSkeleton(w) {
+  return w.replace(/[aeiou]/g,'');
+}
+
+function buildBlob(hindi) {
+  const t = transliterate(hindi);
+  const n = phoneticNorm(t);
+  const direct = phoneticNorm(hindi);
+  const allVariants = n.split(' ').flatMap(w => {
+    const sv = schwaVariants(w);
+    const skel = consonantSkeleton(w);
+    const eToA = w.replace(/e/g,'a');
+    return [...sv, skel, eToA, consonantSkeleton(eToA)];
+  });
+  return (n + ' ' + direct + ' ' + allVariants.join(' ')).replace(/\s+/g,' ');
+}
+
+function blobMatch(blob, query) {
+  const qn = phoneticNorm(query);
+  if (!qn) return true;
+  const qSkel = consonantSkeleton(qn);
+  return blob.split(' ').some(token =>
+    token.startsWith(qn) ||
+    // reverse prefix: both must be >= 4 chars to prevent short token false matches
+    (qn.length >= 4 && token.length >= 4 && qn.startsWith(token)) ||
+    // skeleton: both must be >= 3 chars
+    (qSkel.length >= 3 && token.length >= 3 && token === qSkel)
+  );
+}
+
+
+function norm(text) { return (text||'').toString().toLowerCase().replace(/\s+/g,' ').trim(); }
+function isHindi(text) { return /[\u0900-\u097F]/.test(text); }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hl(text, q) {
+  if (!text || !q) return escHtml(text || '');
+  const safe = escHtml(text.toString());
+  const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','gi');
+  return safe.replace(re,'<mark>$1</mark>');
+}
+
+/* ════════════════════════════════════════
+   COLUMN DETECTION
+════════════════════════════════════════ */
+function detectCols(headers) {
+  const map = {};
+  const aliases = {
+    name:    ['name','naam','नाम','सदस्य नाम','member name','full name','member'],
+    father:  ['father','pita','पिता','father name','पिता का नाम','husband','पति','s/o','w/o','d/o','f/o'],
+    clan:    ['clan','gotra','गोत्र','वंश','शाख','khandaan','biradari','community','tribe'],
+    receipt: ['receipt','रसीद','r.no','rno','reg','registration','serial','sr','sr.no','no.'],
+    mobile:  ['mobile','phone','mob','contact','cell','मोबाइल','फोन','नंबर','number'],
+    address: ['address','पता','locality','area','city','ward','gali','mohalla','street']
+  };
+  headers.forEach((h,i) => {
+    const lh = h.toString().toLowerCase().trim();
+    for (const [key,list] of Object.entries(aliases)) {
+      if (map[key] === undefined && list.some(a => lh.includes(a))) map[key] = i;
+    }
+  });
+  ['name','father','clan','receipt','mobile','address'].forEach((k,i) => {
+    if (map[k] === undefined && headers.length > i) map[k] = i;
+  });
+  return map;
+}
+
+function findHeaderRow(rows) {
+  const headerKeywords = [
+    'name','naam','नाम','father','pita','पिता','clan','गोत्र','वंश','शाख',
+    'receipt','रसीद','mobile','मोबाइल','phone','फोन','address','पता'
+  ];
+  for (let i = 0; i < Math.min(rows.length, 10); i++) {
+    const row = rows[i];
+    if (!row || !row.length) continue;
+    const matchCount = row.filter(cell => {
+      const c = (cell || '').toString().toLowerCase().trim();
+      return c && headerKeywords.some(k => c.includes(k));
+    }).length;
+    if (matchCount >= 2) return i;
+  }
+  return 0;
+}
+
+function makeRecord(id, name, father, clan, receipt, mobile, address) {
+  return { id, name, father, clan, receipt, mobile, address,
+    _nb: buildBlob(name), _fb: buildBlob(father), _cb: buildBlob(clan), _ab: buildBlob(address) };
+}
+
+function processRows(rows, headers) {
+  const col = detectCols(headers);
+  const get = (row, c) => (col[c] !== undefined ? (row[col[c]] || '') : '').toString().trim();
+  return rows.map((row, idx) => {
+    const name = get(row,'name');
+    return makeRecord(idx, name, get(row,'father'), get(row,'clan'), get(row,'receipt'), get(row,'mobile'), get(row,'address'));
+  }).filter(r => r.name);
+}
+
+/* ════════════════════════════════════════
+   AVATAR
+════════════════════════════════════════ */
+const PALETTES = [
+  {bg:'#E1F5EE',c:'#0F6E56'},{bg:'#E6F1FB',c:'#185FA5'},{bg:'#EEEDFE',c:'#534AB7'},
+  {bg:'#FAEEDA',c:'#854F0B'},{bg:'#FBEAF0',c:'#993556'},{bg:'#EAF3DE',c:'#3B6D11'},
+  {bg:'#FAECE7',c:'#993C1D'},{bg:'#E9F0FE',c:'#1D4ED8'}
+];
+function getAvatar(name) {
+  const words = (name||'?').trim().split(/\s+/);
+  const init = words.length >= 2 ? (words[0][0]+words[1][0]).toUpperCase() : (name||'?').slice(0,2).toUpperCase();
+  let code = 0; for (const c of (name||'')) code += c.charCodeAt(0);
+  const pal = PALETTES[code % PALETTES.length];
+  return { init, bg: pal.bg, c: pal.c };
+}
+
+/* ════════════════════════════════════════
+   LOAD DATA FROM GOOGLE SHEET (CSV)
+════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   LOAD DATA FROM GOOGLE SHEET (gviz)
+════════════════════════════════════════ */
+/* Parse Google Visualization API (gviz) response.
+   The response is wrapped like: google.visualization.Query.setResponse({...});
+   We strip the wrapper and read .table.cols / .table.rows */
+function parseGvizResponse(text) {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('Unexpected response format');
+  const json = JSON.parse(text.slice(start, end + 1));
+
+  if (!json.table || !json.table.cols) throw new Error('No table data in response');
+
+  const headers = json.table.cols.map(c => (c.label || c.id || '').toString());
+  const rows = (json.table.rows || []).map(r =>
+    (r.c || []).map(cell => {
+      if (!cell) return '';
+      if (cell.f !== undefined && cell.f !== null) return cell.f;
+      if (cell.v !== undefined && cell.v !== null) return cell.v;
+      return '';
+    })
+  );
+
+  return [headers, ...rows];
+}
+
+function loadData() {
+  document.getElementById('loadingState').style.display = '';
+  document.getElementById('errorState').style.display = 'none';
+  document.getElementById('searchUI').style.display = 'none';
+  document.getElementById('statusText').textContent = 'Loading…';
+  document.getElementById('headerStatus').classList.remove('live');
+
+  const refreshBtn = document.getElementById('refreshBtn');
+  refreshBtn.classList.add('spinning');
+
+  const url = SHEET_GVIZ_URL + '&_t=' + Date.now();
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error('Server returned ' + res.status);
+      return res.text();
+    })
+    .then(text => {
+      refreshBtn.classList.remove('spinning');
+      try {
+        const allRows = parseGvizResponse(text);
+        const rows = allRows.filter(r => r.some(c => (c||'').toString().trim() !== ''));
+        if (!rows.length) throw new Error('No data found in sheet');
+
+        const headerIdx = findHeaderRow(rows);
+        const headers = rows[headerIdx].map(h => h.toString());
+        const dataRows = rows.slice(headerIdx + 1);
+
+        allData = processRows(dataRows, headers);
+        filtered = [...allData];
+
+        if (!allData.length) throw new Error('No valid member rows found');
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('searchUI').style.display = '';
+        document.getElementById('statusText').textContent = 'Live · Updated just now';
+        document.getElementById('headerStatus').classList.add('live');
+        doSearch();
+      } catch(err) {
+        showError(err.message);
+      }
+    })
+    .catch(err => {
+      refreshBtn.classList.remove('spinning');
+      showError('Network error — could not reach Google Sheets. ' + err.message + ' Make sure the sheet is shared as "Anyone with the link can view".');
+    });
+}
+
+/* ════════════════════════════════════════
+   SEARCH
+════════════════════════════════════════ */
+function doSearch() {
+  if (!allData.length) return;
+  const raw = document.getElementById('searchInput').value;
+  const q = raw.trim();
+  document.getElementById('clearBtn').style.display = q ? 'block' : 'none';
+  if (!q) {
+    filtered = [...allData];
+  } else if (/^\d+$/.test(q)) {
+    // Pure number query: match mobile numbers only, exact substring of digits
+    filtered = allData.filter(r => (r.mobile || '').replace(/\D/g,'').includes(q));
+  } else {
+    filtered = allData.filter(r => {
+      if (isHindi(q)) {
+        const qNFC = q.normalize('NFC');
+        const fields = [r.name, r.father, r.clan, r.address].map(f => (f||'').normalize('NFC'));
+        if (fields.some(f => f.includes(qNFC))) return true;
+        const words = qNFC.split(/\s+/).filter(Boolean);
+        return words.some(word => fields.some(f => f.includes(word)));
+      }
+      const qn = norm(q);
+      if ([norm(r.name),norm(r.father),norm(r.clan),norm(r.receipt),norm(r.address)].some(f => f.includes(qn))) return true;
+      return blobMatch(r._nb,q) || blobMatch(r._fb,q) || blobMatch(r._cb,q) || blobMatch(r._ab,q);
+    });
+  }
+  currentPage = 1;
+  sortAndRender();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  doSearch();
+}
+
+function sortAndRender() {
+  const by = document.getElementById('sortSelect').value;
+  if (by === 'name') filtered.sort((a,b) => norm(a.name).localeCompare(norm(b.name)));
+  else if (by === 'clan') filtered.sort((a,b) => norm(a.clan).localeCompare(norm(b.clan)));
+  else if (by === 'receipt') filtered.sort((a,b) => norm(a.receipt).localeCompare(norm(b.receipt),undefined,{numeric:true}));
+  renderResults();
+}
+
+function renderResults() {
+  const q = norm(document.getElementById('searchInput').value.trim());
+  const total = allData.length, found = filtered.length;
+  const pages = Math.ceil(found / PER_PAGE);
+  document.getElementById('resultsInfo').textContent = q
+    ? `${found} result${found!==1?'s':''} for "${document.getElementById('searchInput').value.trim()}"`
+    : `All ${total} members`;
+
+  const start = (currentPage-1)*PER_PAGE;
+  const page  = filtered.slice(start, start+PER_PAGE);
+  const grid  = document.getElementById('grid');
+
+  if (!page.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><h3>No members found</h3><p>Try searching in Hindi or English (e.g. "rahman", "memon", "9826…")</p></div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = page.map((r,i) => {
+    const av = getAvatar(r.name);
+    return `<div class="member-card" style="animation-delay:${i*25}ms">
+      <div class="card-top">
+        <div class="avatar" style="background:${av.bg};color:${av.c}">${av.init}</div>
+        <div class="card-name-wrap">
+          <div class="card-name-row">
+            <div class="card-name" title="${escHtml(r.name)}">${hl(r.name,q)}</div>
+            ${r.receipt ? `<span class="receipt-badge">${hl(r.receipt,q)}</span>` : ''}
+          </div>
+          <div class="card-clan">${r.clan ? hl(r.clan,q) : '<span style="color:#bbb">—</span>'}</div>
+        </div>
+      </div>
+      <div class="card-details">
+        ${r.father ? `<div class="detail-row"><div class="detail-icon">👤</div><div class="detail-content"><div class="detail-label">Father / Husband</div><div class="detail-value">${hl(r.father,q)}</div></div></div>` : ''}
+        ${r.mobile ? `<div class="detail-row"><div class="detail-icon">📱</div><div class="detail-content"><div class="detail-label">Mobile</div><div class="detail-value"><a href="tel:${escHtml(r.mobile)}">${hl(r.mobile,q)}</a></div></div></div>` : ''}
+        ${r.address ? `<div class="detail-row"><div class="detail-icon">📍</div><div class="detail-content"><div class="detail-label">Address</div><div class="detail-value">${hl(r.address,q)}</div></div></div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination(pages);
+}
+
+function renderPagination(pages) {
+  const pg = document.getElementById('pagination');
+  if (pages <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Prev</button>`;
+  for (let i = 1; i <= pages; i++) {
+    if (i===1 || i===pages || Math.abs(i-currentPage)<=1)
+      html += `<button class="page-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+    else if (Math.abs(i-currentPage)===2) html += `<span class="page-dots">…</span>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}>Next ›</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const pages = Math.ceil(filtered.length/PER_PAGE);
+  if (p<1||p>pages) return;
+  currentPage = p;
+  renderResults();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+document.getElementById('searchInput')?.addEventListener('input', doSearch);
+
+function hardReload() {
+  // Clear service worker cache then force fresh load from network
+  if ('caches' in window) {
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
+      window.location.reload(true);
+    });
+  } else {
+    window.location.reload(true);
+  }
+}
+
+loadData();
+
+/* ── Register service worker for PWA install support ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
