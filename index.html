@@ -107,11 +107,156 @@ mark{background:#FAC775;color:#412402;border-radius:2px;padding:0 1px}
   .header-status{display:none}
   .refresh-btn{margin-left:auto}
 }
+
+  /* ══════════════════════════════
+     LOCK SCREEN
+  ══════════════════════════════ */
+  .lock-overlay{
+    position:fixed;inset:0;z-index:999;
+    background:linear-gradient(160deg,#042a1e 0%,#085041 45%,#0a6b54 100%);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;transition:opacity .5s ease;
+  }
+  .lock-overlay.hide{opacity:0;pointer-events:none;}
+  .lock-card{
+    width:100%;max-width:400px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:28px;
+    padding:44px 36px 36px;
+    text-align:center;
+    box-shadow:0 32px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.12);
+    animation:lockIn .55s cubic-bezier(.23,1,.32,1);
+  }
+  @keyframes lockIn{
+    from{opacity:0;transform:translateY(30px) scale(.96);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .lock-logo{
+    width:96px;height:96px;border-radius:22px;
+    margin:0 auto 20px;overflow:hidden;
+    box-shadow:0 12px 32px rgba(0,0,0,0.4),0 0 0 3px rgba(255,255,255,0.12);
+  }
+  .lock-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .lock-title{
+    font-size:22px;font-weight:700;color:#fff;
+    margin-bottom:5px;letter-spacing:.4px;
+    font-family:var(--font);
+  }
+  .lock-subtitle{
+    font-size:13px;color:rgba(255,255,255,0.5);
+    margin-bottom:32px;letter-spacing:.3px;
+  }
+  .lock-divider{
+    height:1px;background:rgba(255,255,255,0.1);
+    margin:0 0 28px;border:none;
+  }
+  .lock-label{
+    font-size:11px;font-weight:600;
+    color:rgba(255,255,255,0.45);
+    text-transform:uppercase;letter-spacing:.8px;
+    text-align:left;margin-bottom:8px;
+    font-family:var(--font);
+  }
+  .lock-input-wrap{position:relative;margin-bottom:16px;}
+  #lockPassword{
+    width:100%;height:52px;
+    background:rgba(255,255,255,0.09);
+    border:1.5px solid rgba(255,255,255,0.18);
+    border-radius:14px;
+    padding:0 50px 0 18px;
+    font-size:18px;letter-spacing:4px;
+    color:#fff;font-family:var(--font);
+    outline:none;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+    caret-color:#EF9F27;
+  }
+  #lockPassword::placeholder{
+    color:rgba(255,255,255,0.28);
+    letter-spacing:0;font-size:14px;
+  }
+  #lockPassword:focus{
+    border-color:rgba(239,159,39,0.7);
+    background:rgba(255,255,255,0.13);
+    box-shadow:0 0 0 4px rgba(239,159,39,0.15);
+  }
+  .lock-eye{
+    position:absolute;right:14px;top:50%;
+    transform:translateY(-50%);
+    background:none;border:none;cursor:pointer;
+    color:rgba(255,255,255,0.35);font-size:19px;
+    line-height:1;padding:4px;transition:color .15s;
+  }
+  .lock-eye:hover{color:rgba(255,255,255,0.8);}
+  .lock-btn{
+    width:100%;height:52px;border-radius:14px;border:none;
+    background:linear-gradient(135deg,#EF9F27 0%,#d4891f 100%);
+    color:#fff;font-size:15px;font-weight:700;
+    cursor:pointer;font-family:var(--font);
+    letter-spacing:.5px;
+    box-shadow:0 6px 20px rgba(239,159,39,0.35);
+    transition:transform .1s,box-shadow .15s,opacity .15s;
+  }
+  .lock-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 10px 28px rgba(239,159,39,0.45);
+  }
+  .lock-btn:active{transform:scale(.98);box-shadow:none;}
+  .lock-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+  .lock-error{
+    color:#FFB3B3;font-size:13px;font-weight:500;
+    margin-top:13px;min-height:18px;
+    font-family:var(--font);
+  }
+  .lock-error.shake{animation:shake .35s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-7px);}
+    40%{transform:translateX(7px);}
+    60%{transform:translateX(-5px);}
+    80%{transform:translateX(5px);}
+  }
+  .lock-footer{
+    margin-top:30px;padding-top:20px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    font-size:12px;color:rgba(255,255,255,0.22);
+    font-family:'Noto Sans Devanagari',var(--font);
+    letter-spacing:.3px;
+  }
+
 </style>
 </head>
 <body>
 
-<header class="app-header">
+<!-- ══ LOCK SCREEN ══ -->
+<div class="lock-overlay" id="lockScreen">
+  <div class="lock-card">
+
+    <div class="lock-logo">
+      <img src="icon-512.png" alt="Memon Jamat Korba">
+    </div>
+
+    <div class="lock-title">Memon Jamat Korba</div>
+    <div class="lock-subtitle">Lifetime Members Directory</div>
+    <hr class="lock-divider">
+
+    <div class="lock-label">Enter Access Code</div>
+    <div class="lock-input-wrap">
+      <input type="password" id="lockPassword"
+        placeholder="Access code…"
+        autocomplete="off" spellcheck="false">
+      <button class="lock-eye" id="lockEye" onclick="toggleLockEye()" title="Show/Hide">👁</button>
+    </div>
+
+    <button class="lock-btn" id="lockBtn" onclick="unlockApp()">🔓 &nbsp;Unlock</button>
+    <div class="lock-error" id="lockError"></div>
+
+    <div class="lock-footer">مَیمَن جماعت کوربا &nbsp;✦&nbsp; Korba, C.G.</div>
+  </div>
+</div>
+
+<header class="app-header" id="appHeader" style="display:none">
   <div class="header-inner">
     <div class="header-logo">🕌</div>
     <div class="header-title">
@@ -126,7 +271,7 @@ mark{background:#FAC775;color:#412402;border-radius:2px;padding:0 1px}
   </div>
 </header>
 
-<main class="main">
+<main class="main" id="appMain" style="display:none">
 
   <!-- Loading state -->
   <div class="state-box" id="loadingState">
@@ -559,7 +704,69 @@ function goPage(p) {
 ════════════════════════════════════════ */
 document.getElementById('searchInput')?.addEventListener('input', doSearch);
 
-loadData();
+
+/* ════════════════════════════════════════
+   LOCK SCREEN
+════════════════════════════════════════ */
+// ⚠️  Change this password to your own secret code
+const APP_PASSWORD = "memon@2025";
+const LOCK_SESSION_KEY = "memonJamatUnlocked";
+
+function unlockApp() {
+  const pass = document.getElementById('lockPassword').value;
+  const errBox = document.getElementById('lockError');
+  const btn = document.getElementById('lockBtn');
+
+  if (!pass) { errBox.textContent = 'Please enter the access code.'; return; }
+
+  if (pass === APP_PASSWORD) {
+    errBox.textContent = '';
+    try { sessionStorage.setItem(LOCK_SESSION_KEY, '1'); } catch(e) {}
+    const overlay = document.getElementById('lockScreen');
+    overlay.classList.add('hide');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      document.getElementById('appHeader').style.display = '';
+      document.getElementById('appMain').style.display = '';
+    }, 400);
+    loadData();
+  } else {
+    errBox.textContent = '❌ Incorrect access code. Please try again.';
+    document.getElementById('lockPassword').value = '';
+    document.getElementById('lockPassword').focus();
+    // re-trigger shake animation
+    errBox.classList.remove('shake');
+    void errBox.offsetHeight;
+    errBox.classList.add('shake');
+  }
+}
+
+function toggleLockEye() {
+  const inp = document.getElementById('lockPassword');
+  const eye = document.getElementById('lockEye');
+  if (inp.type === 'password') { inp.type = 'text'; eye.textContent = '🙈'; }
+  else { inp.type = 'password'; eye.textContent = '👁'; }
+}
+
+document.getElementById('lockPassword')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') unlockApp();
+});
+
+/* Auto-unlock if already authenticated this session */
+(function checkSession() {
+  try {
+    if (sessionStorage.getItem(LOCK_SESSION_KEY) === '1') {
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('appHeader').style.display = '';
+      document.getElementById('appMain').style.display = '';
+      loadData();
+      return;
+    }
+  } catch(e) {}
+  // Show lock screen, focus input
+  document.getElementById('lockPassword')?.focus();
+})();
+
 
 /* ── Register service worker for PWA install support ── */
 if ('serviceWorker' in navigator) {
